@@ -7,12 +7,12 @@ import { useNavigate } from 'react-router-dom';
 
 function Lead_Follow_up_Main() {
   const [userdata, setuserdata] = useState([]);
-  
-         const nagStage1=     useNavigate()
+
+  const nagStage1 = useNavigate()
   const userdetails = async () => {
     try {
-// const url='https://my.api.mockaroo.com/studentDetails.json?key=60fc60d0'
-const url="https://my.api.mockaroo.com/englishhubstuends.json?key=1336f620"
+      const url = 'https://my.api.mockaroo.com/studentDetails.json?key=60fc60d0'
+      // const url="https://my.api.mockaroo.com/englishhubstuends.json?key=1336f620"
 
       const response = await axios.get(url);
       setuserdata(response.data);
@@ -27,13 +27,13 @@ const url="https://my.api.mockaroo.com/englishhubstuends.json?key=1336f620"
 
   // Calculate user length only when userdata is not null
   const userlength = userdata ? userdata.length : 0;
-  const handleuserStage=(student)=>{
-     
-  nagStage1('/stage1',{replace:false, state:{StudentData:student}})
+  const handleuserStage = (student) => {
+
+    nagStage1('/stage1', { replace: false, state: { StudentData: student } })
   }
 
   return (
-    <div className=" mx-auto px-4 py-8" style={{width:'75vw'}}>
+    <div className=" mx-auto px-4 py-8" style={{ width: '75vw' }}>
       <Lead_User_stage userlength={userlength} />
       <Lead_follow_up_user userdata={userdata} handleuserStage={handleuserStage} />
     </div>

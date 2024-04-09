@@ -1,6 +1,7 @@
-import React from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types'
 
 const Lead_follow_up_user = ({ userdata ,handleuserStage}) => {
   return (
@@ -31,6 +32,10 @@ const Lead_follow_up_user = ({ userdata ,handleuserStage}) => {
       </table>
     </div>
   );
+}
+Lead_follow_up_user.propTypes={
+  userdata:PropTypes.arrayOf(PropTypes.object) ,
+  handleuserStage:PropTypes.func
 }
 
 export default Lead_follow_up_user;

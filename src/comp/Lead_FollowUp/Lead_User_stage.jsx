@@ -1,7 +1,7 @@
 // Lead_User_stage.jsx
 
 import { USer_stage } from '../../Assects/Database_Of_lead';
-
+import PropTypes from 'prop-types'
 const Lead_User_stage = ({ userlength }) => {
   return (
     <div className='flex relative flex-wrap justify-start gap-4 my-2'>
@@ -17,4 +17,7 @@ const Lead_User_stage = ({ userlength }) => {
   );
 }
 
+Lead_User_stage.propTypes={
+  userlength:PropTypes.number
+}
 export default Lead_User_stage;

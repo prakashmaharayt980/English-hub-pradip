@@ -1,6 +1,7 @@
 
 import { faCheck, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types'
 
 const SubmittedSelectionCheck = ({ student }) => {
 
@@ -53,5 +54,9 @@ const SubmittedSelectionCheck = ({ student }) => {
     </div>
   );
 };
+
+SubmittedSelectionCheck.propTypes={
+  student:PropTypes.object
+}
 
 export default SubmittedSelectionCheck;

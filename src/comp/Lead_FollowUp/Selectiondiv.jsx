@@ -1,51 +1,75 @@
 import { useFormik } from 'formik';
-import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
-
+import Alert from '@mui/material/Alert';
+import * as Yup from 'yup'
+import DialogForConformationOfLead from './DialogForConformationOfLead';
+import YesNoDiv from './YesNoDiv';
+import { NoDiv, YesDiv } from './YesNoContents';
+import LeadFollowupSelectionDiv from './LeadFollowupSelectionDiv';
+import PropTypes from 'prop-types'
 export default function Selectiondiv({ student }) {
   const [submittedMethods, setSubmittedMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState('');
-  const [yesSelected, setYesSelected] = useState(false);
-  const [noSelected, setNoSelected] = useState(false);
   const [success, setSuccess] = useState(false);
-
-
-
+  const [CountSubmitted, setCountSubmitted] = useState(1)
+  const [SuccessMeg, setSuccessMeg] = useState('')
+  const [ResetWarning, setResetWarning] = useState(false)
+  const [prevSelectedMethod, setprevSelectedMethod] = useState('')
+ 
+  useEffect(()=>{
+    const truevalueinServer=   Object.values(student?.submitted).filter(Boolean).length
+    setCountSubmitted(truevalueinServer) 
+    console.log("🚀 ~ useEffect ~ truevalueinServer:", truevalueinServer)
+    },[])
+  
   const navLeadfollowUp = useNavigate();
-  const methodways = [
-    { label: 'Notification', name: 'notification' },
-    { label: 'Sms', name: 'sms' },
-    { label: 'Email', name: 'email' },
-    { label: 'WhatsApp', name: 'whatsapp' },
-    { label: 'Call', name: 'call' },
-    { label: 'Viber', name: 'viber' },
-  ];
+  // followup methodys
+  const methodways = useMemo(() =>
+    [
+      { label: 'Notification', name: 'notification' },
+      { label: 'Sms', name: 'sms' },
+      { label: 'Email', name: 'email' },
+      { label: 'WhatsApp', name: 'whatsapp' },
+      { label: 'Call', name: 'call' },
+      { label: 'Viber', name: 'viber' },
+    ]
+    , [])
+  // initialization
+  const initialValues = useMemo(() => {
+    return methodways.reduce((acc, method) => {
+      acc[method.name] = false;
+      acc[`${method.name}_yes`] = false;
+      acc[`${method.name}_no`] = false;
+      acc[`${method.name}-title`] = '';
+      acc[`${method.name}-message`] = '';
+      acc[`${method.name}-main-comments`] = '';
+      acc.maincomments = [];
+      return acc;
+    }, {});
+  }, [methodways]);
 
-  const initialValues = {
-    maincomments:[]
-  };
-  methodways.forEach((method) => {
-    initialValues[method.name] = false;
-    initialValues[`${method.name}-yes`] = false;
-    initialValues[`${method.name}-no`] = false;
-    initialValues[`${method.name}-title`] = '';
-    initialValues[`${method.name}-message`] = '';
-    initialValues[`${method.name}-main-comments`] = '';
-
-  });
-
-  const { handleChange, handleSubmit, values, setFieldValue, handleBlur } = useFormik({
+ 
+  //  validation schema
+  const validationSchema = useMemo(() =>
+    Yup.object().shape({
+      [`${selectedMethod}-title`]: Yup.string().required(`${selectedMethod} required title`),
+      [`${selectedMethod}-message`]: Yup.string().required(`${selectedMethod} required message`),
+      [`${selectedMethod}-main-comments`]: Yup.string().required(`${selectedMethod} required Main Comments`),
+    }), [selectedMethod]
+  )
+  // formik
+  const { handleChange, handleSubmit, values, setFieldValue, handleBlur, errors, touched} = useFormik({
     initialValues,
+    validationSchema,
     onSubmit: async (values) => {
       try {
+     
         setSubmittedMethods([...submittedMethods, selectedMethod]);
-
-        const url = 'https://my.api.mockaroo.com/englishhub.json?key=1336f620&__method=POST';
-        // const url='https://my.api.mockaroo.com/Englishhubdata.json?key=60fc60d0&__method=POST'
+        // const url = 'https://my.api.mockaroo.com/englishhub.json?key=1336f620&__method=POST';
+        const url = 'https://my.api.mockaroo.com/Englishhubdata.json?key=60fc60d0&__method=POST'
         values.maincomments.push(values[`${selectedMethod}-main-comments`]);
         const response = await axios.post(url, {
           leads_content: [
@@ -62,169 +86,181 @@ export default function Selectiondiv({ student }) {
           is_notification: (selectedMethod === 'notification' || selectedMethod === 'sms') ? 'yes' : 'No'
         });
 
-        console.log('submitted ',
-          {
-            leads_content: [
-              {
-                title: values[`${selectedMethod}-title`],
-                short_description: values[`${selectedMethod}-message`],
-                type: selectedMethod,
-                content: values[`${selectedMethod}-main-comments`],
-              }
-            ],
-            user_id: student?.student_id,
-            stage: student?.status,
-            overall_comment: DOMPurify.sanitize(`<p>${values.maincomments}</p>.join('\n')`),
-            is_notification: (selectedMethod === 'notification' || selectedMethod === 'sms') ? 'yes' : 'No'
-          }
-        );
-
+        console.log("🚀 ~ onSubmit: ~ hh:", {
+          leads_content: [
+            {
+              title: values[`${selectedMethod}-title`],
+              short_description: values[`${selectedMethod}-message`],
+              type: selectedMethod,
+              content: values[`${selectedMethod}-main-comments`],
+            }
+          ],
+          user_id: student?.student_id,
+          stage: student?.status,
+          overall_comment: DOMPurify.sanitize(`<p>${values.maincomments}</p>.join('\n')`),
+          is_notification: (selectedMethod === 'notification' || selectedMethod === 'sms') ? 'yes' : 'No'
+        } )
 
         if (response.status === 200) {
-          setFieldValue(`${selectedMethod}-yes`, false);
-          setFieldValue(`${selectedMethod}-no`, false);
           setSuccess(true);
-          setYesSelected(false);
-          setNoSelected(false);
-          setSelectedMethod('');
+          TypeConditionChange()
 
-          if (response?.data?.stage === false) {
-            setTimeout(() => {
-              navLeadfollowUp('/', { replace: true, state: { stage: true, id: response?.id } });
-            }, 3000);
+          setSelectedMethod('')
+          setprevSelectedMethod('')
+          // show completed depend on number of true
+          if (CountSubmitted <= 6) {
+            setCountSubmitted(CountSubmitted + 1)
+            setSuccessMeg(
+              `${selectedMethod} is submitted`
+            )
+            if (CountSubmitted === 5) {
+              setSuccessMeg(`Stage ${student?.status} is Completed`)
+              setTimeout(() => {
+                navLeadfollowUp('/', { replace: true, state: { stage: true, id: response?.id } });
+              }, 4000)
+            }
+            console.log('couynt', CountSubmitted);
           }
         }
       } catch (error) {
-        console.error('Error:', error);
+        setSuccessMeg(error)
+
+      } finally {
+
+        // for new msg or new followup messag of success
+        setTimeout(() => {
+          setSuccessMeg('')
+        }, 2000);
       }
+      
+       
     },
   });
-
-  const handleMethodSelect = (method) => {
-    setSelectedMethod(method);
-    setYesSelected(false);
-    setNoSelected(false);
-
-  };
-
-  const handleYesNo = (e) => {
-    const { name, checked } = e.target;
-    const [method] = name.split('-');
-
-    if (checked && name.endsWith('-yes')) {
-      setFieldValue(`${method}-no`, false);
-      setYesSelected(true);
-      setNoSelected(false);
-    } else if (checked && name.endsWith('-no')) {
-      setFieldValue(`${method}-yes`, false);
-      setNoSelected(true);
-      setYesSelected(false);
+  useEffect(() => {
+    if (prevSelectedMethod !== '' && selectedMethod !== prevSelectedMethod) {
+      setResetWarning(true)
     }
 
-    handleChange(e);
+  }, [selectedMethod, prevSelectedMethod]);
+
+  // selection of followup div to determine which followup is
+  const handleMethodSelect = (method) => {
+    if (selectedMethod === '') {
+      setSelectedMethod(method)
+      setprevSelectedMethod(method)
+    }
+
+    else if (prevSelectedMethod !== '' && selectedMethod === prevSelectedMethod) {
+      setprevSelectedMethod(method)
+    }
   };
+
+
+  // checking checkbox value to render html
+  const handleYesNo = useCallback((e) => {
+    const { name, checked } = e.target;
+    const [method] = name.split('_');
+    if (checked && name.endsWith('_yes')) {
+      setFieldValue(`${method}_no`, false);
+    } else if (checked && name.endsWith('_no')) {
+      setFieldValue(`${method}_yes`, false);
+    }
+    handleChange(e);
+  }, [handleChange, setFieldValue])
+
+  //when new follow is selected or changing followup befor submitting
+  const TypeConditionChange = () => {
+    setFieldValue(`${selectedMethod}_yes`, false);
+    setFieldValue(`${selectedMethod}_no`, false);
+  }
+
+  // function to handle dailogbox
+  const handleResetCancel = () => {
+    setprevSelectedMethod(selectedMethod)
+    setResetWarning(false)
+  }
+  const handleResetOk = () => {
+    setSelectedMethod(prevSelectedMethod)
+    TypeConditionChange();
+    setResetWarning(false);
+  }
+  
+
+
 
   return (
     <div className=" w-full  px-4 py-8" style={{ width: '75%' }}>
       <form onSubmit={handleSubmit}>
-        <div className="space-y-4">
-          <h1 className="text-2xl font-semibold text-center mb-4">Send Follow-up Message stage {student?.status}</h1>
-          <div className="flex flex-row justify-between gap-4 ">
-            {methodways.map((method) => (
-              <div
-                key={method.name}
-                className={`p-4 border rounded-md cursor-pointer flex items-center justify-center transition-colors duration-300 ${selectedMethod === method.name ? 'border-blue-500 bg-blue-100' : 'border-gray-200 hover:bg-gray-100'}
-                ${student?.submitted[method.name] === true ? 'pointer-events-none' : ''}`}
-                onClick={() => handleMethodSelect(method.name)}
-              >
-
-                <span className="text-lg font-semibold">{method.label}</span>
-                {((submittedMethods.includes(method.name) && success) || (student?.submitted[method.name] === true)) && (
-                  <FontAwesomeIcon icon={faCheck} className="ml-2 text-green-500" />
-
-                )}
-              </div>
-            ))}
-
-          </div>
-        </div>
+        <LeadFollowupSelectionDiv
+          methodways={methodways}
+          success={success}
+          student={student}
+          handleMethodSelect={handleMethodSelect}
+          submittedMethods={submittedMethods}
+          selectedMethod={selectedMethod} />
         {selectedMethod && (
           <div className="space-y-4">
             <div>
               <h1 className="text-lg font-semibold">Do you have a problem with {selectedMethod}?</h1>
-              <div className="flex items-center space-x-4">
-                <input
-                  type="checkbox"
-                  id={`${selectedMethod}-yes`}
-                  name={`${selectedMethod}-yes`}
-                  checked={values[`${selectedMethod}-yes`]}
-                  onChange={handleYesNo}
-                  onBlur={handleBlur} />
-                <label htmlFor={`${selectedMethod}-yes`} className="text-lg">Yes</label>
-                <input
-                  type="checkbox"
-                  id={`${selectedMethod}-no`}
-                  name={`${selectedMethod}-no`}
-                  checked={values[`${selectedMethod}-no`]}
-                  onChange={handleYesNo}
-                  onBlur={handleBlur} />
-                <label htmlFor={`${selectedMethod}-no`} className="text-lg">No</label>
-              </div>
+              <YesNoDiv
+                handleYesNo={handleYesNo}
+                values={values}
+                handleBlur={handleBlur}
+                selectedMethod={selectedMethod} />
             </div>
-            {yesSelected && !noSelected && (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  id={`${selectedMethod}-title`}
-                  name={`${selectedMethod}-title`}
-                  value={values[`${selectedMethod}-title`]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="Title"
-                  className="border rounded-md px-4 py-2 w-full  placeholder:text-teal-600" />
-                <textarea
-                  id={`${selectedMethod}-message`}
-                  name={`${selectedMethod}-message`}
-                  value={values[`${selectedMethod}-message`]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="Message"
-                  className="border rounded-md px-4 py-2 w-full resize-none  placeholder:text-teal-600"
-                  rows={4} />
-                <textarea
-
-                  id={`${selectedMethod}-main-comments`}
-                  name={`${selectedMethod}-main-comments`}
-                  value={values[`${selectedMethod}-main-comments`]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="Main Comments"
-                  className="border rounded-md px-4 py-2 w-full resize-none  placeholder:text-teal-600"
-                  rows={4} />
-              </div>
+            {(values[`${selectedMethod}_yes`] === true) && (values[`${selectedMethod}_no`] === false) && (
+              <YesDiv
+                selectedMethod={selectedMethod}
+                values={values}
+                handleChange={handleChange}
+                handleBlur={handleBlur} />
             )}
-            {noSelected && !yesSelected && (
-              <div className="space-y-4">
-                <textarea
-                  id={`${selectedMethod}-main-comments`}
-                  name={`${selectedMethod}-main-comments`}
-                  value={values[`${selectedMethod}-main-comments`]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="Main Comments"
-                  className="border rounded-md px-4 py-2 w-full resize-none  placeholder:text-teal-600"
-                  rows={4} />
-              </div>
+            {(values[`${selectedMethod}_no`] === true) && (values[`${selectedMethod}_yes`] === false) && (
+              <NoDiv
+                selectedMethod={selectedMethod}
+                values={values}
+                handleChange={handleChange}
+                handleBlur={handleBlur} />
             )}
           </div>
         )}
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-300"
-        >
-          Submit
-        </button>
+        {(student?.submitted[selectedMethod] === false) && selectedMethod &&
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-300"
+          >
+            Submit
+          </button>
+        }
+        {
+          // successMsg
+          SuccessMeg != '' && success && (
+            <Alert variant="filled" severity="success">
+              {SuccessMeg}
+            </Alert>
+          )
+        }
+        {
+          // error message
+          ((errors[`${selectedMethod}-tittle`] && touched[`${selectedMethod}-tittle`])
+            || (errors[`${selectedMethod}-message`] && touched[`${selectedMethod}-message`])
+            || (errors[`${selectedMethod}-main-comments`] && touched[`${selectedMethod}-main-comments`]))
+
+          && (
+            <Alert variant="filled" severity="error">
+              {errors[`${selectedMethod}-tittle`] || errors[`${selectedMethod}-message`] || errors[`${selectedMethod}-main-comments`]}
+            </Alert>
+          )
+        }
+        <DialogForConformationOfLead
+          handleResetCancel={handleResetCancel}
+          handleResetOk={handleResetOk}
+          ResetWarning={ResetWarning} />
       </form>
     </div>
   );
+}
+
+Selectiondiv.propTypes = {
+  student: PropTypes.object
 }
