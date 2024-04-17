@@ -2,7 +2,7 @@
 import { faEnvelope, faPhone, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar } from '@mui/material';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { Leadcontext } from '../../../../Assects/Lead_Context';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,9 +13,10 @@ function Stage1_Div_Top() {
     // close function
     const handleCloseBar = () => {
        NavagationTOItsParentsLead('/',{replace:true})
+       console.log('svdsv')
        setSubparams(''),
        setSubLeadstudents({})
-    };
+    }
 
     return (
        <>
@@ -25,7 +26,7 @@ function Stage1_Div_Top() {
             <div className="flex justify-between  px-4 py-2 bg-white shadow-md">
                 <FontAwesomeIcon
                     icon={faTimes}
-                    onClick={handleCloseBar}
+                    onClick={()=>handleCloseBar}
                     className="text-lg cursor-pointer"
                 />
                 <span className="text-lg h1_head">User Details</span>

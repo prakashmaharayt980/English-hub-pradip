@@ -25,7 +25,7 @@ function Stage_sep_Bottom({count,leadLabel,chiplabel,currentstage,isActive}) {
 Stage_sep_Bottom.propTypes={
   count:PropTypes.number,
   leadLabel:PropTypes.string,
-  chiplabel:PropTypes,
+  chiplabel:PropTypes.any,
   currentstage:PropTypes.func,
   isActive:PropTypes.bool
 }
