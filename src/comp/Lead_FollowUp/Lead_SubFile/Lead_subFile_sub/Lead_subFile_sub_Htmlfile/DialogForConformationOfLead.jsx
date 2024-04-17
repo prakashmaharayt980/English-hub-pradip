@@ -1,6 +1,6 @@
 
+// childern of Stage1_Div_Message_Div
 import PropTypes from 'prop-types'
-
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
 
 function DialogForConformationOfLead({ResetWarning,handleResetCancel,handleResetOk}) {

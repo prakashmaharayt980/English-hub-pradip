@@ -1,43 +1,47 @@
-import { useEffect, useState } from 'react';
-import Lead_User_stage from './Lead_User_stage';
-import axios from 'axios';
-import Lead_follow_up_user from './Lead_follow_up_user';
+import { useCallback, useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
-
-
+import Is_LoadingDiv from '../../Assects/Is_LoadingDiv';
+import Lead_stage_seperation_Div from './Lead_SubFile/Lead_stage_seperation_Div'
+import Lead_user_Table from './Lead_SubFile/Lead_user_Table'
+import { Leadcontext } from '../../Assects/Lead_Context';
 function Lead_Follow_up_Main() {
-  const [userdata, setuserdata] = useState([]);
+  const { leadstudents,setSubparams,SubLeadDetails,Subparams,loading,SubLeadstudents } = useContext(Leadcontext)
+  const NavigationtoTOInitalStage=useNavigate()
 
-  const nagStage1 = useNavigate()
-  const userdetails = async () => {
-    try {
-      const url = 'https://my.api.mockaroo.com/studentDetails.json?key=60fc60d0'
-      // const url="https://my.api.mockaroo.com/englishhubstuends.json?key=1336f620"
-
-      const response = await axios.get(url);
-      setuserdata(response.data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
+  // goes to lead_Stage1_Div file
+  const handleuserStage =useCallback((StudentleadFromUser) => {
+    if (StudentleadFromUser) {
+      setSubparams(`${StudentleadFromUser}/leads-details`)      
     }
-  };
-
-  useEffect(() => {
-    userdetails();
-  }, []);
-
-  // Calculate user length only when userdata is not null
-  const userlength = userdata ? userdata.length : 0;
-  const handleuserStage = (student) => {
-
-    nagStage1('/stage1', { replace: false, state: { StudentData: student } })
-  }
-
+    if(Subparams !==''){
+      SubLeadDetails()
+    }   
+   
+    if(loading===false &&SubLeadstudents!=='' &&Subparams !=='' ){
+    setTimeout(() => {
+      NavigationtoTOInitalStage('/stage1',{replace:true})
+    }, 1000);
+    }
+  },[Subparams,loading,SubLeadstudents])
+ 
   return (
-    <div className=" mx-auto px-4 py-8" style={{ width: '75vw' }}>
-      <Lead_User_stage userlength={userlength} />
-      <Lead_follow_up_user userdata={userdata} handleuserStage={handleuserStage} />
-    </div>
-  );
-}
+    <div className=" mx-auto mt-3 px-4 py-8" style={{
+      width: '75vw',
+      border: '1px solid #ebdddd',
+      borderRadius: '15px'
+    }}>
+      {
+        Object.keys(leadstudents).length===0 ? (
+          <Is_LoadingDiv />
+        ) : (
+          <>
+            <Lead_stage_seperation_Div />
+            <Lead_user_Table handleuserStage={handleuserStage} />
+          </>
+        )
+      }
+    </div >
 
+  )
+}
 export default Lead_Follow_up_Main;

@@ -13,3 +13,19 @@
   border-radius: 10px;
   box-sizing: border-box;
 }
+.table_head{
+  background-color: rgb(103, 114, 229);
+  color: rgb(255, 255, 255);
+  box-sizing: border-box;
+  width: calc(25% - 0px);
+}
+*{
+  box-sizing: border-box;
+}
+.h1_head{
+  margin-bottom: .5rem;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #32325d;
+}

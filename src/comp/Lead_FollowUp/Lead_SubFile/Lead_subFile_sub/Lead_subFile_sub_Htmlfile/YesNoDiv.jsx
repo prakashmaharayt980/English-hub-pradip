@@ -1,5 +1,5 @@
 // Question user to select yes or No check box
-// import React from 'react'
+// childern of Stage1_Div_Message_Div
 import PropTypes from 'prop-types';
 
 function YesNoDiv({selectedMethod,handleYesNo,handleBlur,values}) {

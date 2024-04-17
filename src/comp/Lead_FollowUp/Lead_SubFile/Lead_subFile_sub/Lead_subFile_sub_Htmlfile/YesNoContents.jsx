@@ -1,4 +1,5 @@
 // if user selected Yes checked box
+// childern of Stage1_Div_Message_Div
 import PropTypes from 'prop-types';
 const CommonpropTypes={
   selectedMethod:PropTypes.string,
@@ -63,6 +64,4 @@ function NoDiv({ selectedMethod, handleBlur, handleChange, values }) {
 }
  YesDiv.propTypes=CommonpropTypes
  NoDiv.propTypes=CommonpropTypes
-
-
 export { YesDiv, NoDiv };
