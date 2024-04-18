@@ -1,14 +1,16 @@
 
 // chlidren of Lead_folow_Up_Main file
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { USer_stage } from '../../../Assects/Database_Of_lead';
 import Stage_sep_Bottom from '../../../Assects/Stage_sep_Botton';
 const Lead_stage_seperation_Div = () => {
-  const [CurrentStage, setCurrentStage] = useState(0)
-   const handlestageid=(id)=>{
+
+  const [CurrentStage, setCurrentStage] = useState()
+   const handlestageid=useCallback((id)=>{
       setCurrentStage(id)
-   }
+   },[setCurrentStage])
+  
   return (
     <div className='flex flex-col relative flex-wrap justify-start gap-4 my-2 '>
       <h1

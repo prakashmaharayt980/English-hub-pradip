@@ -12,14 +12,14 @@ import YesNoDiv from './Lead_subFile_sub_Htmlfile/YesNoDiv';
 import { NoDiv, YesDiv } from './Lead_subFile_sub_Htmlfile/YesNoContents';
 import LeadFollowupSelectionDiv from './Lead_subFile_sub_Htmlfile/LeadFollowupSelectionDiv';
 
-import { Leadcontext } from '../../../../Assects/Lead_Context';
+import { Sub_Lead_Contex } from '../../../../Assects/Sub_Lead_Context';
 export default function Stage1_Div_Message_Div() {
   const [selectedMethod, setSelectedMethod] = useState('');
   // const [CountSubmitted, setCountSubmitted] = useState(1)
   const [SuccessMeg, setSuccessMeg] = useState('')
   const [ResetWarning, setResetWarning] = useState(false)
   const [prevSelectedMethod, setprevSelectedMethod] = useState('')
-  const { SubLeadstudents, setResposeUpadateLeadPostValue } = useContext(Leadcontext)
+  const { SubLeadstudents, setResposeUpadateLeadPostValue } = useContext(Sub_Lead_Contex)
 
   const navLeadfollowUp = useNavigate();
   // followup methodys
@@ -172,7 +172,7 @@ export default function Stage1_Div_Message_Div() {
     <>
       {
         Object.keys(SubLeadstudents).length > 0 && (
-          <div className=" w-full  px-4 py-8" style={{ width: '75%' }}>
+          <div className=" w-full mt-2 px-4 py-8 box-design" >
             <form onSubmit={handleSubmit}>
               <LeadFollowupSelectionDiv
                 methodways={methodways}

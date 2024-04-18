@@ -3,11 +3,12 @@
 import { faCheck, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useContext} from 'react';
-import { Leadcontext } from '../../../../Assects/Lead_Context';
+import { Sub_Lead_Contex } from '../../../../Assects/Sub_Lead_Context';
+
 
 const SubmittedSelectionCheck = () => {
 
-  const { SubLeadstudents } = useContext(Leadcontext);
+  const { SubLeadstudents } = useContext(Sub_Lead_Contex);
   const titleList = [
     { label: 'stage', name: 'stage_no', valuename: 'stage_no' },
     { label: 'Notification', name: 'is_notification', valuename: 'App/Web' },

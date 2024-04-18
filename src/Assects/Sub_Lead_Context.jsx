@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 export const Sub_Lead_Contex = React.createContext({
-    setSubparams: '',
+  setSubparams: '',
   Subparams: '',
   SubStudent_Lead: {},
   setSubStudent_Lead: {},
@@ -12,7 +12,7 @@ export const Sub_Lead_Contex = React.createContext({
 })
 export const Sub_Lead_ContextProvider = ({ children }) => {
     const [Subparams, setSubparams] = useState('')
-    const [SubLeadstudents, setSubLeadstudents] = useState({})
+    const [SubLeadstudents, setSubLeadstudents] = useState({} )
     const [ResposeUpadateLeadPostValue, setResposeUpadateLeadPostValue] = useState({})
     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkwNTY0NTM1LCJpYXQiOjE3MTI4MDQ1MzUsImp0aSI6IjVlNWM1ZGM4ZjljYTQxNzZiM2Y3NzNkNDUzZDhiMDM2IiwidXNlcl9pZCI6NTA4NDN9.5PqVc-fIeG5rUIvIxnkH64jPUDTYnYS6PKg-cUZFY2g'
 
@@ -29,6 +29,7 @@ export const Sub_Lead_ContextProvider = ({ children }) => {
             console.error('Error fetching user data:', error);
         }
     };
+   
     return (
         <Sub_Lead_Contex.Provider value={{
             SubLeadDetails,
