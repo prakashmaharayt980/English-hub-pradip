@@ -6,33 +6,29 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import Alert from '@mui/material/Alert';
+import PropTypes from 'prop-types';
 import * as Yup from 'yup'
 import DialogForConformationOfLead from './Lead_subFile_sub_Htmlfile/DialogForConformationOfLead';
 import YesNoDiv from './Lead_subFile_sub_Htmlfile/YesNoDiv';
 import { NoDiv, YesDiv } from './Lead_subFile_sub_Htmlfile/YesNoContents';
 import LeadFollowupSelectionDiv from './Lead_subFile_sub_Htmlfile/LeadFollowupSelectionDiv';
-
+import { Leadcontext } from '../../../../Assects/Lead_Context';
 import { Sub_Lead_Contex } from '../../../../Assects/Sub_Lead_Context';
-export default function Stage1_Div_Message_Div() {
+import { methodways } from '../../../../Assects/Database_Of_lead';
+
+export default function Stage1_Div_Message_Div({StageValue,higestvalueContanorIndex}) {
   const [selectedMethod, setSelectedMethod] = useState('');
   // const [CountSubmitted, setCountSubmitted] = useState(1)
   const [SuccessMeg, setSuccessMeg] = useState('')
-  const [ResetWarning, setResetWarning] = useState(false)
+  const [ResetWarning, setResetWarning] = useState(false) 
   const [prevSelectedMethod, setprevSelectedMethod] = useState('')
   const { SubLeadstudents, setResposeUpadateLeadPostValue } = useContext(Sub_Lead_Contex)
+  const {param}=useContext(Leadcontext)
 
   const navLeadfollowUp = useNavigate();
   // followup methodys
-  const methodways = useMemo(() =>
-    [
-      { label: 'Notification', name: 'notification', isname: 'is_notification' },
-      { label: 'Sms', name: 'sms', isname: 'is_sms' },
-      { label: 'Email', name: 'email', isname: 'is_email' },
-      { label: 'WhatsApp', name: 'whatapp', isname: 'is_whatapp' },
-      { label: 'Call', name: 'call', isname: 'is_call' },
-      { label: 'Viber', name: 'viber', isname: 'is_viber' },
-    ]
-    , [])
+
+   
   // initialization
   const initialValues = {
     maincomments: []
@@ -58,6 +54,8 @@ export default function Stage1_Div_Message_Div() {
   const studentleadlength = SubLeadstudents?.data?.student_leads?.length
   const studentleadDeSturcure = SubLeadstudents?.data?.student_leads
   const isValueKey = methodways.find(method => method.name === selectedMethod)?.isname;
+
+
   // formik
   const { handleChange, handleSubmit, values, setFieldValue, handleBlur, errors, touched } = useFormik({
     initialValues,
@@ -82,7 +80,7 @@ export default function Stage1_Div_Message_Div() {
             }
           ],
           user_id: SubLeadstudents?.data?.student_id,
-          stage_no: studentleadlength === 0 ? 1 : (studentleadDeSturcure[studentleadlength - 1]?.stage_no),
+          stage_no: studentleadlength === 0 ? 1 : StageValue,
           overall_comment: DOMPurify.sanitize(`<p>${values.maincomments}</p>.join('\n')`),
           [`${isValueKey}`]: "Yes"
 
@@ -95,6 +93,7 @@ export default function Stage1_Div_Message_Div() {
           TypeConditionChange()
           setSelectedMethod('')
           setprevSelectedMethod('')
+        
 
           // show completed depend on number of true
           // if (CountSubmitted <= 6) {
@@ -171,14 +170,17 @@ export default function Stage1_Div_Message_Div() {
   return (
     <>
       {
-        Object.keys(SubLeadstudents).length > 0 && (
+        Object.keys(SubLeadstudents).length > 0 &&  (
           <div className=" w-full mt-2 px-4 py-8 box-design" >
             <form onSubmit={handleSubmit}>
               <LeadFollowupSelectionDiv
                 methodways={methodways}
                 student={SubLeadstudents?.data}
                 handleMethodSelect={handleMethodSelect}
-                selectedMethod={selectedMethod} />
+                selectedMethod={selectedMethod}
+                StageValue={StageValue} 
+                higestvalueContanorIndex={higestvalueContanorIndex}
+                />
               {selectedMethod && (
                 <div className="space-y-4">
                   <div>
@@ -244,5 +246,9 @@ export default function Stage1_Div_Message_Div() {
       }
     </>
   );
+}
+Stage1_Div_Message_Div.propTypes={
+  StageValue:PropTypes.number.isRequired,
+  higestvalueContanorIndex:PropTypes.number.isRequired
 }
 

@@ -1,16 +1,13 @@
 
 // chlidren of Lead_folow_Up_Main file
 
-import { useCallback, useState } from 'react';
+import {  useContext } from 'react';
 import { USer_stage } from '../../../Assects/Database_Of_lead';
 import Stage_sep_Bottom from '../../../Assects/Stage_sep_Botton';
+import { Leadcontext } from '../../../Assects/Lead_Context';
 const Lead_stage_seperation_Div = () => {
+const {param}=useContext(Leadcontext)
 
-  const [CurrentStage, setCurrentStage] = useState()
-   const handlestageid=useCallback((id)=>{
-      setCurrentStage(id)
-   },[setCurrentStage])
-  
   return (
     <div className='flex flex-col relative flex-wrap justify-start gap-4 my-2 '>
       <h1
@@ -20,11 +17,11 @@ const Lead_stage_seperation_Div = () => {
         {
           USer_stage.map((stage) => (
             <Stage_sep_Bottom
-            isActive={stage.stepcount===CurrentStage}
+            isActive={stage.stepcount===param}
              key={stage.id} 
              leadLabel={stage.label}             
-             count={stage.stepcount} 
-             currentstage={handlestageid}
+             count={stage.stepcount}            
+          
              chiplabel={stage.labelnum} />
           ))
         }
@@ -33,8 +30,5 @@ const Lead_stage_seperation_Div = () => {
   );
 }
 
-// Lead_User_stage.propTypes={
-//   userlength:PropTypes.number,
 
-// }
 export default Lead_stage_seperation_Div;

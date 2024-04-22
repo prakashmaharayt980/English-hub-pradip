@@ -13,10 +13,9 @@ function Stage1_Div_Top() {
     const  SubLeadstudentsCompress= SubLeadstudents?.data
     const NavagationTOItsParentsLead=useNavigate()
     // close function
-    const handleCloseBar = () => {
+    const handleCloseBar =() => {
        NavagationTOItsParentsLead('/',{replace:true})
-
-
+       setSubparams('')
        setSubLeadstudents({})
     }
 
@@ -24,6 +23,7 @@ function Stage1_Div_Top() {
        <>
        {SubLeadstudents && SubLeadstudents?.data &&
          (
+            // top nav
             <div className="shadow-md m-auto ">
             <div className="flex justify-between  px-4 py-2 bg-white shadow-md">
                 <FontAwesomeIcon
@@ -36,6 +36,7 @@ function Stage1_Div_Top() {
             <div className="flex p-4 text-white  w-full" style={{
                 background: '#4b0082'
             }}>
+                {/* student img or Detalis */}
                 <div className="mr-4 flex flex-col justify-start px-2 w-1/2">
                     <span className="font-bold text-xl mb-1 capitalize">{`${SubLeadstudentsCompress?.full_name}'s profile `}</span>
                     {SubLeadstudents && SubLeadstudents?.data?.profile_picture ? (
